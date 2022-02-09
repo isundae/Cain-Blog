@@ -16,10 +16,7 @@ const MAO = require('multer-aliyun-oss');
     MulterModule.register({
       storage: MAO({
         config: {
-          region: 'oss-cn-hangzhou',
-          accessKeyId: 'LTAI5tEjqEHnuoXUHfeeSyee',
-          accessKeySecret: 'qVf7psgzGSZ4txmOv9ShNl2JfxHwmF',
-          bucket: 'caintest',
+          
         },
       }),
     }),
