@@ -21,11 +21,13 @@ export class Blog extends Base {
   introduce: string;
 
   @Column({
+    type: 'text',
     nullable: true,
   })
   content: string;
 
   @Column({
+    type: 'text',
     nullable: true,
   })
   htmlconten: string;

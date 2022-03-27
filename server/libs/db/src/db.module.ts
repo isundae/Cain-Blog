@@ -4,7 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './Entitys/user.entity';
 import { Tag } from './Entitys/tag.entity';
 import { Blog } from './Entitys/blog.entity';
-const Entity = TypeOrmModule.forFeature([User, Tag, Blog]);
+import { Link } from './Entitys/link.entity';
+import { AdminUser } from './Entitys/Adminuser.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+const Entity = TypeOrmModule.forFeature([User, Tag, Blog, Link, AdminUser]);
 
 @Global()
 @Module({
@@ -16,12 +19,15 @@ const Entity = TypeOrmModule.forFeature([User, Tag, Blog]);
       username: 'root',
       password: 'xiaoxiwen',
       database: 'cain-test',
-      entities: [User, Tag, Blog],
+      entities: [User, Tag, Blog, Link, AdminUser],
       synchronize: true,
     }),
     Entity,
+    JwtModule.register({
+      secret: 'xxaiasasdsasasadasdasdasdassadaas',
+    }),
   ],
   providers: [DbService],
-  exports: [DbService, Entity],
+  exports: [DbService, Entity, JwtModule],
 })
 export class DbModule {}

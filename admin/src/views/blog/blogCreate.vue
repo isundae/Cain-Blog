@@ -71,14 +71,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, toRefs } from "vue";
 import MdEditor from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { Upload } from "../../service/Utils";
 import { TagsFandAll } from "../../service/Tags";
-import { BlogCreate } from "../../service/Blog";
+import { BlogCreate, BlogFindAll, BlogsUpdate } from "../../service/Blog";
+import { useRoute, useRouter } from "vue-router";
 import type {
   UploadChangeParam,
   UploadProps,
@@ -95,12 +96,13 @@ interface Tag {
 }
 
 interface Blog {
+  id?: string | string[];
   title: string;
   cover: string;
   introduce: string;
   content: string;
   htmlconten: string;
-  tag: string;
+  tag: string | any;
   state: boolean;
 }
 
@@ -115,27 +117,62 @@ const Blogfrom = reactive<Blog>({
 });
 
 const fileList = ref([]);
+const route = useRoute();
+const router = useRouter();
 const loading = ref<boolean>(false);
 const imageUrl = ref<string>("");
 const options = ref<SelectProps>();
+const routeFlag = ref<boolean>(true);
+
+const routeFuc = async () => {
+  const id:string[] | string | undefined = route.params.id;
+  if (id != undefined) {
+    const data = await BlogFindAll({
+      search: {
+        id: id,
+      },
+    });
+    const from = ref<Blog>(data.data[0]);
+    Blogfrom.id = id 
+    Blogfrom.title = from.value.title;
+    Blogfrom.cover = from.value.cover;
+    Blogfrom.content = from.value.content;
+    Blogfrom.introduce = from.value.introduce;
+    Blogfrom.tag = from.value.tag?.id;
+    imageUrl.value = from.value.cover;
+    loading.value = false;
+    routeFlag.value = true;
+  }
+};
 
 const submit = async (bool: boolean) => {
   if (bool) {
     Blogfrom.state = false;
     Blogfrom.tag = "3";
   }
-  const data = await BlogCreate(Blogfrom);
-  if(data.code == 200){
-    message.success('插入成功')
-    Blogfrom.title = "" 
-    Blogfrom.cover = "" 
-    Blogfrom.introduce = "" 
-    Blogfrom.content = "" 
-    Blogfrom.htmlconten = "" 
-    Blogfrom.tag = "" 
-    Blogfrom.state = true
-    visible.value = false
+  if (routeFlag.value) {
+    const data = await BlogsUpdate(Blogfrom);
+     if (data.code != 200) {
+        message.error("操作失败");
+        return false
+    }
+  } else {
+    const data = await BlogCreate(Blogfrom);
+    if (data.code != 200) {
+        message.error("操作失败");
+        return false
+    }
   }
+  router.push("/blogs/list");
+  message.success("操作成功");
+  Blogfrom.title = "";
+  Blogfrom.cover = "";
+  Blogfrom.introduce = "";
+  Blogfrom.content = "";
+  Blogfrom.htmlconten = "";
+  Blogfrom.tag = "";
+  Blogfrom.state = true;
+  visible.value = false;
 };
 
 const Fetch = async () => {
@@ -161,6 +198,7 @@ const visible = ref<boolean>();
 
 onMounted(() => {
   Fetch();
+  routeFuc();
 });
 
 function getBase64(img: Blob, callback: (base64Url: string) => void) {

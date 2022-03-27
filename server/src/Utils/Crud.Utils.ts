@@ -14,13 +14,24 @@ export class Crud {
     const search = query.search || '{}';
     const limit = Number(query.limit) || 10;
     const page = (Number(query.page) - 1) * limit || 0;
-    const data = await getManager()
-      .createQueryBuilder(this.Entity, 'entity')
-      .leftJoinAndSelect(join, 'children')
-      .where(JSON.parse(search))
-      .skip(page)
-      .take(limit)
-      .getMany();
+    let data;
+    if (join) {
+      data = await getManager()
+        .createQueryBuilder(this.Entity, 'entity')
+        .leftJoinAndSelect(join, 'children')
+        .where(JSON.parse(search))
+        .skip(page)
+        .take(limit)
+        .getMany();
+    } else {
+      data = await getManager()
+        .createQueryBuilder(this.Entity, 'entity')
+        .where(JSON.parse(search))
+        .skip(page)
+        .take(limit)
+        .getMany();
+    }
+
     const totals = await getManager()
       .createQueryBuilder(this.Entity, 'entity')
       .where(JSON.parse(search))

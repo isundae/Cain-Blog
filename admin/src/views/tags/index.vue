@@ -90,10 +90,10 @@ interface Params {
 }
 
 const visibleCreate = ref<boolean>(false);
-const tagvalue = ref<string>("");
+const tagvalue = ref<string | undefined>("");
 const typevalue = ref<string>("");
 const TagsList = ref();
-const tagid = ref<string>("");
+const tagid = ref<string | undefined>("");
 const pagination = ref<Pagination>({
   total: 10,
   page: "1",
@@ -176,11 +176,10 @@ const typefuc = (str: string, name?: string, id?: string) => {
   typevalue.value = str;
   visibleCreate.value = true;
   tagvalue.value = name;
-  console.log(id);
   tagid.value = id;
 };
 
-const change = (e) => {
+const change = (e: any) => {
   params.value = {
     search: {
       grade: "1",

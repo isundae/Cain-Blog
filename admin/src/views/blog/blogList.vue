@@ -40,7 +40,7 @@
         <a-table-column key="action" title="操作">
           <template #default="{ record }">
             <span>
-              <a>编辑</a>
+                <router-link :to="`/blogs/update/${record.id}`" tag="a">编辑</router-link>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认删除吗，确认之后操作无法返回"
@@ -66,10 +66,7 @@ const params = ref();
 const BlogList = ref();
 
 const fetch = async () => {
-  params.value = {
-    search: {
-    },
-  };
+  params.value = {};
   const data = await BlogFindAll(params.value);
   BlogList.value = data.data;
 };

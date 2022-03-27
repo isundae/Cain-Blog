@@ -103,6 +103,10 @@ const MenuList = ref<Menu[]>([
         title: "标签管理",
         path: "/tags",
       },
+      {
+        title: "友链管理",
+        path: "/link/list",
+      },
     ],
   },
 ]);
